@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
@@ -23,7 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 STORAGE_VERSION = 1
 
 # Type variable for generic data structure
-TData = TypeVar("TData")
+TData = TypeVar("TData", bound=Mapping[str, Any])
 
 
 class BaseHAStorageAdapter(ABC, Generic[TData]):
@@ -58,6 +59,7 @@ class BaseHAStorageAdapter(ABC, Generic[TData]):
         self._entry_id = entry_id
         self._retention_days = retention_days
         self._loaded = False
+        self._store: Store[TData]
 
         # Create storage key if not provided
         if storage_key is None:
@@ -65,7 +67,7 @@ class BaseHAStorageAdapter(ABC, Generic[TData]):
             storage_key = self.__class__.__name__.lower()
 
         # Initialize Store
-        self._store: Store[Any] = Store(hass, STORAGE_VERSION, f"{storage_key}_{entry_id}")
+        self._store = Store(hass, STORAGE_VERSION, f"{storage_key}_{entry_id}")
         self._data: TData = self._get_default_data()
 
     @abstractmethod

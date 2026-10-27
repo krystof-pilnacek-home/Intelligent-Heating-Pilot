@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Maintenance
 - CI and release tooling hardening (#194, #199).
-- Type checking (#203) – Removed redundant `cast` calls, annotated the HA storage `Store`, and typed the optional `dt_util` import, so fewer mypy warnings are reported on every PR.
+- Type checking (#203) – Removed redundant `cast` calls, annotated the HA storage `Store`, typed the optional `dt_util` import, and fixed the config flow typing, so the mypy errors reported on every PR are down to zero and a new warning actually means something.
 
 ## [0.6.4] - 2026-10-24
 

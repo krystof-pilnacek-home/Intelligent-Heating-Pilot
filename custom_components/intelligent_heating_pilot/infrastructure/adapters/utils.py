@@ -56,7 +56,9 @@ def read_numeric_state(state: State, weather_attribute: str) -> float | None:
     Returns:
         Float value, or None if missing or not numeric
     """
-    raw = state.attributes.get(weather_attribute) if state.domain == WEATHER_DOMAIN else state.state
+    raw: Any = (
+        state.attributes.get(weather_attribute) if state.domain == WEATHER_DOMAIN else state.state
+    )
     try:
         return float(raw)
     except (ValueError, TypeError):

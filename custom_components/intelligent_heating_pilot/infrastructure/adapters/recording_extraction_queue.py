@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from ...domain.interfaces.historical_data_adapter_interface import IHistoricalDataAdapter
     from ...domain.value_objects.heating import HeatingCycle
 
+
 _LOGGER = logging.getLogger(__name__)
 
 QUEUE_YIELD_SECONDS = 10.0

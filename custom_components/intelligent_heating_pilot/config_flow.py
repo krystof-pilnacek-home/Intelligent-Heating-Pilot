@@ -61,7 +61,7 @@ def _outdoor_source_selector(device_class: str | None = None) -> selector.Entity
     )
 
 
-class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
+class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Intelligent Heating Pilot."""
 
     VERSION = 1
@@ -74,7 +74,9 @@ class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN
         """Get the options flow for this handler."""
         return IntelligentHeatingPilotOptionsFlow()
 
-    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
 
@@ -106,16 +108,13 @@ class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN
                 _LOGGER.info("Creating entry with data: %s", processed)
                 await self.async_set_unique_id(processed[CONF_NAME])
                 self._abort_if_unique_id_configured()
-                return cast(
-                    FlowResult,
-                    self.async_create_entry(
-                        title=processed[CONF_NAME],
-                        data=processed,
-                    ),
+                return self.async_create_entry(
+                    title=processed[CONF_NAME],
+                    data=processed,
                 )
 
         # Get all scheduler entities with their friendly names
-        scheduler_options = []
+        scheduler_options: list[selector.SelectOptionDict] = []
         for state in self.hass.states.async_all():
             if state.domain not in ("switch", "schedule"):
                 continue
@@ -127,7 +126,9 @@ class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN
             ):
                 friendly_name = state.attributes.get("friendly_name", state.entity_id)
                 scheduler_options.append(
-                    {"value": state.entity_id, "label": f"{friendly_name} ({state.entity_id})"}
+                    selector.SelectOptionDict(
+                        value=state.entity_id, label=f"{friendly_name} ({state.entity_id})"
+                    )
                 )
 
         # Sort by label for easier selection
@@ -270,13 +271,10 @@ class IntelligentHeatingPilotConfigFlow(config_entries.ConfigFlow, domain=DOMAIN
             }
         )
 
-        return cast(
-            FlowResult,
-            self.async_show_form(
-                step_id="user",
-                data_schema=data_schema,
-                errors=errors,
-            ),
+        return self.async_show_form(
+            step_id="user",
+            data_schema=data_schema,
+            errors=errors,
         )
 
 
@@ -354,7 +352,7 @@ class IntelligentHeatingPilotOptionsFlow(config_entries.OptionsFlow):
             return current_data.get(key, default)
 
         # Get all scheduler entities for SelectSelector
-        scheduler_options = []
+        scheduler_options: list[selector.SelectOptionDict] = []
         for state in self.hass.states.async_all():
             if state.domain not in ("switch", "schedule"):
                 continue
@@ -365,7 +363,9 @@ class IntelligentHeatingPilotOptionsFlow(config_entries.OptionsFlow):
             ):
                 friendly_name = state.attributes.get("friendly_name", state.entity_id)
                 scheduler_options.append(
-                    {"value": state.entity_id, "label": f"{friendly_name} ({state.entity_id})"}
+                    selector.SelectOptionDict(
+                        value=state.entity_id, label=f"{friendly_name} ({state.entity_id})"
+                    )
                 )
         scheduler_options.sort(key=lambda x: x["label"])
 
